@@ -23,7 +23,7 @@
       color: #ff6f61; /* Playful orange text */
       font-size: 2em;
       font-weight: bold;
-      text-align: center;f
+      text-align: center;
     }
   </style>
 </head>
@@ -37,6 +37,10 @@
     const gridSize = 16;
     const fps = 15;
     let count = 0;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
 
     // Adjust canvas size to fit the screen
     const canvasSize = Math.min(window.innerWidth, window.innerHeight) * 0.8;
@@ -179,8 +183,48 @@
       }
     });
 
+    // Touch event listeners for mobile devices
+    canvas.addEventListener('touchstart', (e) => {
+      const touch = e.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+      console.log('Touch Start:', touchStartX, touchStartY);
+    });
+
+    canvas.addEventListener('touchend', (e) => {
+      const touch = e.changedTouches[0];
+      touchEndX = touch.clientX;
+      touchEndY = touch.clientY;
+      console.log('Touch End:', touchEndX, touchEndY);
+
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX > 0 && snake.dx === 0) {
+          snake.dx = gridSize;
+          snake.dy = 0;
+          console.log('Swipe Right');
+        } else if (deltaX < 0 && snake.dx === 0) {
+          snake.dx = -gridSize;
+          snake.dy = 0;
+          console.log('Swipe Left');
+        }
+      } else {
+        if (deltaY > 0 && snake.dy === 0) {
+          snake.dy = gridSize;
+          snake.dx = 0;
+          console.log('Swipe Down');
+        } else if (deltaY < 0 && snake.dy === 0) {
+          snake.dy = -gridSize;
+          snake.dx = 0;
+          console.log('Swipe Up');
+        }
+      }
+    });
+
     resetGame();
-    message.textContent = "Press any key to start!";
+    message.textContent = "Press any key or swipe to start!";
   </script>
 </body>
 </html>
